@@ -1,5 +1,6 @@
 package org.freedu.nsda_job1_jpc
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,55 +22,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.google.gson.Gson
 
 @Composable
-fun ProductListScreen(viewModel: ProductViewModel = viewModel()) {
-
+fun ProductListScreen(
+    navController: NavController,
+    viewModel: ProductViewModel = viewModel()
+) {
     val products by viewModel.products.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
-    val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchProducts()
-    }
+    LaunchedEffect(Unit) { viewModel.fetchProducts() }
 
     Box(modifier = Modifier.fillMaxSize()) {
-
         when {
-            isLoading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
+            isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 
-            errorMessage != null -> {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Error: $errorMessage")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(onClick = { viewModel.fetchProducts() }) {
-                        Text("Retry")
-                    }
+            errorMessage != null -> Column(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Error: $errorMessage")
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { viewModel.fetchProducts() }) {
+                    Text("Retry")
                 }
             }
 
-            else -> {
-                LazyColumn {
-                    items(products) { product ->
-                        ProductItem(product = product) {
-                            Toast.makeText(
-                                context,
-                                "Clicked: ${it.title}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+            else -> LazyColumn {
+                items(products) { product ->
+                    ProductItem(product = product) {
+                        val json = Uri.encode(Gson().toJson(it))
+                        navController.navigate(Screen.ProductDetail.createRoute(json))
                     }
                 }
             }
         }
     }
 }
+
+
 
 
 

@@ -9,6 +9,8 @@ interface ApiService {
     suspend fun getProducts(): List<Product>
 }
 
+
+
 object ApiClient {
     private const val BASE_URL = "https://fakestoreapi.com/"
 
@@ -20,6 +22,5 @@ object ApiClient {
             .create(ApiService::class.java)
     }
 }
-
 
 

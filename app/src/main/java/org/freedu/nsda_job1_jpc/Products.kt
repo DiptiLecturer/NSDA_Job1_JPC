@@ -5,7 +5,8 @@ data class Product(
     val title: String,
     val price: Double,
     val description: String,
-    val image: String? // Fakestore API uses 'image' (single image)
+    val image: String? // single image for UI
 )
+
 
 

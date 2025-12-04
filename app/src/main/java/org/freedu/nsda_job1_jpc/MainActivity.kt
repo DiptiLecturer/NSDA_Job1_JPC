@@ -11,6 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.google.gson.Gson
 import org.freedu.nsda_job1_jpc.ui.theme.NSDA_Job1_JPCTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,9 +25,30 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             NSDA_Job1_JPCTheme {
-                ProductListScreen()
+                val navController = rememberNavController()
+                val viewModel: ProductViewModel = viewModel() // single instance
+
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.ProductList.route
+                ) {
+                    composable(Screen.ProductList.route) {
+                        ProductListScreen(navController, viewModel)
+                    }
+
+                    composable(
+                        route = Screen.ProductDetail.route,
+                        arguments = listOf(navArgument("productJson") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val json = backStackEntry.arguments?.getString("productJson")
+                        val product = Gson().fromJson(json, Product::class.java)
+                        ProductDetailScreen(product = product, navController = navController)
+                    }
+
+                }
             }
         }
     }
 }
+
 

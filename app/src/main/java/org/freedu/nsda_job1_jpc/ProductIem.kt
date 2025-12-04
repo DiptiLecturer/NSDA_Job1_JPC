@@ -45,6 +45,7 @@ fun ProductItem(product: Product, onClick: (Product) -> Unit) {
                 error = painterResource(id = R.drawable.ic_launcher_background)
             )
 
+
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
